@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QFFT.ai — Post-Quantum Security Orchestration</title>
+<meta name="description" content="QFFT.ai audits legacy cryptographic vaults, evaluates lattice-based readiness, and orchestrates zero-trust transitions to post-quantum cryptography.">
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#11161d; --panel2:#0e1319; --line:#232b36;
+    --text:#e8edf2; --muted:#8a97a6; --faint:#5b6775;
+    --accent:#38bdf8; --accent-dim:#0e7490; --amber:#f59e0b;
+    --red:#f87171; --green:#34d399;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"Segoe UI",Inter,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  /* header */
+  header{position:sticky;top:0;z-index:10;background:rgba(11,15,20,.92);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .head{display:flex;align-items:center;justify-content:space-between;
+    padding:14px 0;gap:16px;flex-wrap:wrap}
+  .logo{font-weight:800;letter-spacing:.02em;font-size:22px;text-decoration:none;color:var(--text)}
+  .logo b{color:var(--accent);font-weight:800}
+  .tagline{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+    margin-left:12px;font-weight:600}
+  nav{display:flex;gap:20px;flex-wrap:wrap;font-size:14px}
+  nav a{color:var(--muted);text-decoration:none}
+  nav a:hover{color:var(--text)}
+  .btn{display:inline-block;background:var(--accent);color:#04121a !important;
+    font-weight:700;text-decoration:none;padding:10px 18px;border-radius:8px;font-size:15px}
+  .btn:hover{filter:brightness(1.1)}
+  .btn.ghost{background:transparent;color:var(--text) !important;border:1px solid var(--line)}
+  /* hero */
+  .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;
+    padding:64px 0 48px;align-items:center}
+  @media(max-width:820px){.hero{grid-template-columns:1fr}}
+  .eyebrow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+  h1{font-size:52px;line-height:1.08;margin:16px 0;letter-spacing:-.01em}
+  @media(max-width:820px){h1{font-size:38px}}
+  h1 .hl{color:var(--accent)}
+  .sub{font-size:19px;color:var(--muted);max-width:620px}
+  .cta{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+  .hero-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .hero-card h3{margin:0 0 4px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .hero-card p{margin:0;color:var(--muted);font-size:14px}
+  /* stakes */
+  .stakes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:8px 0 56px}
+  @media(max-width:820px){.stakes{grid-template-columns:1fr}}
+  .stake{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .stake .k{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
+  .stake p{margin:8px 0 0;color:var(--muted);font-size:15px}
+  .stake p b{color:var(--text)}
+  /* sections */
+  section{padding:48px 0;border-top:1px solid var(--line)}
+  h2{font-size:32px;line-height:1.2;margin:0 0 12px;letter-spacing:-.01em}
+  .lede{color:var(--muted);font-size:18px;max-width:720px;margin:0 0 32px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+  .grid4{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:820px){.grid4{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px}
+  .card .n{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--accent);
+    font-size:13px;letter-spacing:.12em}
+  .card h3{margin:8px 0 6px;font-size:19px}
+  .card p{margin:0;color:var(--muted);font-size:15px}
+  .callout{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:12px;padding:24px 28px;margin:0 0 32px}
+  .callout p{margin:0;font-size:19px;color:var(--text)}
+  .callout p span{color:var(--muted);font-size:16px}
+  /* steps */
+  .steps{counter-reset:step}
+  .step{display:grid;grid-template-columns:44px 1fr;gap:16px;padding:20px 0;
+    border-bottom:1px solid var(--line)}
+  .step:last-child{border-bottom:0}
+  .step .num{width:36px;height:36px;border-radius:50%;border:1px solid var(--accent);
+    color:var(--accent);display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:15px}
+  .step h3{margin:0 0 4px;font-size:18px}
+  .step p{margin:0;color:var(--muted);font-size:15px}
+  /* audiences */
+  .tags{display:flex;gap:10px;flex-wrap:wrap}
+  .tag{border:1px solid var(--line);border-radius:999px;padding:8px 16px;
+    font-size:14px;color:var(--muted);background:var(--panel)}
+  /* form */
+  form{display:grid;gap:14px;max-width:560px}
+  label{font-size:14px;color:var(--muted)}
+  input,select,textarea{width:100%;margin-top:6px;background:#0a0e13;color:var(--text);
+    border:1px solid var(--line);border-radius:8px;padding:11px 13px;font-size:15px;font-family:inherit}
+  textarea{min-height:110px;resize:vertical}
+  button{cursor:pointer;border:0}
+  .note{font-size:13px;color:var(--faint)}
+  #form-ok{display:none;background:#0d1f16;border:1px solid #14532d;border-radius:12px;
+    padding:20px;margin-top:8px}
+  #form-ok p{margin:0;color:var(--muted)}
+  footer{border-top:1px solid var(--line);padding:32px 0 48px;color:var(--faint);font-size:13px}
+  footer p{margin:6px 0}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap head">
+    <div>
+      <a class="logo" href="#">QFFT<b>.ai</b></a>
+      <span class="tagline">Post-Quantum Security Orchestration</span>
+    </div>
+    <nav>
+      <a href="#migration">The migration</a>
+      <a href="#platform">Platform</a>
+      <a href="#method">Method</a>
+      <a href="#horizon">Horizon</a>
+      <a class="btn" href="#access">Request access</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <div>
+      <div class="eyebrow">Post-Quantum Security Orchestration</div>
+      <h1>The keys your enterprise trusts are <span class="hl">about to change hands.</span></h1>
+      <p class="sub">QFFT.ai audits legacy cryptographic vaults, evaluates lattice-based readiness, and orchestrates zero-trust transitions — so the move to post-quantum cryptography happens on your schedule, not an adversary's.</p>
+      <div class="cta">
+        <a class="btn" href="#access">Request access</a>
+        <a class="btn ghost" href="#method">How the migration works</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h3>The Fourier engine, schematically</h3>
+      <svg viewBox="0 0 400 220" width="100%" role="img" aria-label="FFT butterfly diagram">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#38bdf8"></path>
+          </marker>
+        </defs>
+        <g stroke="#38bdf8" stroke-width="1.6" fill="none" marker-end="url(#arr)">
+          <path d="M20,50 L180,50"></path><path d="M20,170 L180,170"></path>
+          <path d="M20,50 L180,170"></path><path d="M20,170 L180,50"></path>
+          <path d="M220,50 L380,50"></path><path d="M220,170 L380,170"></path>
+          <path d="M220,50 L380,170"></path><path d="M220,170 L380,50"></path>
+        </g>
+        <g fill="#e8edf2" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13">
+          <text x="8" y="54">x₀</text><text x="8" y="174">x₁</text>
+          <text x="186" y="54">X₀</text><text x="186" y="174">X₁</text>
+          <text x="386" y="54" text-anchor="end">X₀′</text><text x="386" y="174" text-anchor="end">X₁′</text>
+        </g>
+        <g fill="#8a97a6" font-size="12" font-family="ui-monospace,Menlo,Consolas,monospace">
+          <text x="200" y="112" text-anchor="middle">butterfly · combine · repeat</text>
+        </g>
+      </svg>
+      <p>The fast Fourier transform's butterfly: split a signal, transform the halves, recombine. The quantum Fourier transform inside Shor's algorithm is the same idea, executed on superpositions — and it is what breaks RSA and elliptic-curve cryptography.</p>
+    </div>
+  </div>
+
+  <div class="stakes">
+    <div class="stake">
+      <div class="k">The break</div>
+      <p><b>Shor's algorithm breaks RSA and ECC</b> on a cryptographically relevant quantum computer. The timeline is uncertain; the mathematics is not.</p>
+    </div>
+    <div class="stake">
+      <div class="k">The standard</div>
+      <p><b>NIST finalized the first PQC standards in August 2024</b> — ML-KEM, ML-DSA, and SLH-DSA. The replacement algorithms exist. Deployment is the work.</p>
+    </div>
+    <div class="stake">
+      <div class="k">The clock</div>
+      <p><b>Harvest now, decrypt later.</b> Encrypted traffic captured today can be stored and decrypted once quantum hardware arrives. Data with a long secrecy lifetime is already exposed.</p>
+    </div>
+  </div>
+
+  <section id="migration">
+    <h2>A migration is a change of authority.</h2>
+    <p class="lede">Swapping algorithms is the easy part. The hard part is governing the crossing: what gets re-keyed, in what order, under whose policy, with what proof — across vaults, codebases, protocols, and partners that were never inventoried together.</p>
+    <div class="callout">
+      <p>Every credential, certificate, and trust root gets re-issued under a new regime.<br>
+      <span>The risk isn't just the new math. It's an unmanaged transition: half-migrated systems, orphaned keys, and nobody able to prove what is protected and what is not.</span></p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>What breaks, precisely</h3>
+        <p>Public-key cryptography as deployed today — RSA for key exchange and signatures, elliptic-curve cryptography for signatures and agreement — rests on factoring and discrete logarithms. Shor's algorithm solves both in polynomial time on a large enough quantum computer. Symmetric cryptography and hashing are far less exposed; the migration centers on public-key infrastructure.</p>
+      </div>
+      <div class="card">
+        <h3>What replaces it</h3>
+        <p>Lattice-based cryptography, standardized by NIST: ML-KEM for key establishment, ML-DSA for signatures, SLH-DSA as a hash-based signature backup. Migration in practice is hybrid first — classical and post-quantum algorithms combined — so no system is left unprotected during the transition.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="platform">
+    <h2>The platform</h2>
+    <p class="lede">One orchestration layer for the whole migration, from discovery to audit evidence.</p>
+    <div class="grid4">
+      <div class="card">
+        <div class="n">01</div>
+        <h3>Discover &amp; audit</h3>
+        <p>Find every legacy cryptographic dependency: vaults and key managers, certificates, libraries, protocols, data at rest and in transit, and the third-party components that carry their own cryptography with them.</p>
+      </div>
+      <div class="card">
+        <div class="n">02</div>
+        <h3>Evaluate readiness</h3>
+        <p>Score each system for lattice-based readiness: algorithm support, key-size and performance impact, hybrid-mode options, and vendor posture. Readiness is measured per system, not asserted per enterprise.</p>
+      </div>
+      <div class="card">
+        <div class="n">03</div>
+        <h3>Orchestrate the transition</h3>
+        <p>Phase the migration under policy: hybrid deployments first, cutovers gated on verification, rollback paths kept live. Zero-trust transitions — no standing trust carried across the boundary unverified.</p>
+      </div>
+      <div class="card">
+        <div class="n">04</div>
+        <h3>Prove every step</h3>
+        <p>Every migration action lands in an evidence ledger: what was re-keyed, when, under which policy, verified how. Auditors and regulators get a record, not a narrative.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="method">
+    <h2>How the migration works</h2>
+    <p class="lede">Five stages, in order. The sequence matters: exposure first, algorithms second, cutover last.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <div><h3>Inventory</h3>
+        <p>Map all cryptographic assets and dependencies. You cannot migrate what you have not found, and most enterprises have not found it all.</p></div>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <div><h3>Prioritize by secrecy lifetime</h3>
+        <p>Data that must stay secret longest migrates first. Harvest-now-decrypt-later turns the migration order into a risk calculation, not a convenience order.</p></div>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <div><h3>Pilot in hybrid</h3>
+        <p>Run classical and post-quantum algorithms together on a bounded set of systems. Measure performance, compatibility, and failure modes before anything load-bearing moves.</p></div>
+      </div>
+      <div class="step">
+        <div class="num">4</div>
+        <div><h3>Cut over under policy</h3>
+        <p>Each cutover is gated: verification evidence required, rollback available, authority to proceed explicit. No silent transitions, no standing trust carried across unverified.</p></div>
+      </div>
+      <div class="step">
+        <div class="num">5</div>
+        <div><h3>Verify continuously</h3>
+        <p>Post-migration, the inventory keeps running. New code, new vendors, and new certificates are checked against the post-quantum policy as they arrive — the migration ends as a standing control, not a project.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="who">
+    <h2>Built for highly regulated architectures</h2>
+    <p class="lede">Where a migration failure is a compliance event, not just an engineering delay.</p>
+    <div class="tags">
+      <span class="tag">Federal systems</span>
+      <span class="tag">Aerospace &amp; defense</span>
+      <span class="tag">Financial services</span>
+      <span class="tag">Healthcare</span>
+      <span class="tag">Critical infrastructure</span>
+      <span class="tag">Cloud &amp; SaaS providers</span>
+    </div>
+  </section>
+
+  <section id="horizon">
+    <h2>Beyond migration: the Fourier horizon</h2>
+    <p class="lede">The same Fourier machinery points past cryptanalysis. Quantum circuits for the fast Fourier transform generalize to signal processing and image analysis — any problem the classical FFT solves, in a quantum circuit that wastes no qubits on garbage bits. As quantum backends mature, QFFT.ai's research track turns the platform into an abstraction layer for Fourier workloads: classical AI systems offloading to quantum hardware without touching the physics layer.</p>
+    <div class="callout">
+      <p>Migration first. Abstraction second.<br>
+      <span>The orchestration business funds the research; the research extends the platform. Neither is sold as the other.</span></p>
+    </div>
+  </section>
+
+  <section id="access">
+    <h2>Request access</h2>
+    <p class="lede">Tell us what you're migrating. We'll come back with what the first inventory pass would cover.</p>
+    <form id="access-form">
+      <div>
+        <label for="f-name">Name</label>
+        <input id="f-name" name="name" type="text" autocomplete="name" required>
+      </div>
+      <div>
+        <label for="f-email">Work email</label>
+        <input id="f-email" name="email" type="email" autocomplete="email" required>
+      </div>
+      <div>
+        <label for="f-org">Organization</label>
+        <input id="f-org" name="org" type="text" autocomplete="organization">
+      </div>
+      <div>
+        <label for="f-sector">Sector</label>
+        <select id="f-sector" name="sector">
+          <option value="">Select…</option>
+          <option>Federal</option>
+          <option>Aerospace &amp; defense</option>
+          <option>Financial services</option>
+          <option>Healthcare</option>
+          <option>Critical infrastructure</option>
+          <option>Cloud / SaaS</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div>
+        <label for="f-msg">What are you migrating?</label>
+        <textarea id="f-msg" name="message" placeholder="Vaults, PKI, product lines, partner integrations…"></textarea>
+      </div>
+      <div>
+        <button class="btn" type="submit">Request access</button>
+      </div>
+      <p class="note">Preview form: submissions are not yet delivered to an inbox. Connecting delivery is a deployment step, not a design step.</p>
+    </form>
+    <div id="form-ok">
+      <p><b>Received — in preview.</b> This form is a front-end preview: nothing was sent anywhere. Once delivery is connected, requests will reach the QFFT.ai team directly.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><b style="color:var(--text)">QFFT.ai</b> — Post-Quantum Security Orchestration. This site is in development and describes a planned platform, not a shipping product. No customer deployments are claimed.</p>
+    <p>Nothing on this page is legal or compliance advice. Migration timelines depend on your regulators, contracts, and risk posture.</p>
+    <p>QFFT.ai is independent. No affiliation with NIST, NSA, or any quantum hardware vendor. Algorithm names (ML-KEM, ML-DSA, SLH-DSA) are the NIST standards' designations.</p>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('access-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    document.getElementById('form-ok').style.display = 'block';
+    e.target.reset();
+    document.getElementById('form-ok').scrollIntoView({behavior: 'smooth', block: 'center'});
+  });
+</script>
+</body>
+</html>
